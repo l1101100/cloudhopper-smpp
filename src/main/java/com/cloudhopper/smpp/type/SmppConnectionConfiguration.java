@@ -29,6 +29,7 @@ import com.cloudhopper.smpp.SmppConstants;
  */
 public class SmppConnectionConfiguration {
 
+    private String localAddress;
     private String host;
     private int port;
     private long connectTimeout;
@@ -38,9 +39,27 @@ public class SmppConnectionConfiguration {
     }
 
     public SmppConnectionConfiguration(String host, int port, long connectTimeout) {
+        this(null, host, port, connectTimeout);
+    }
+
+    public SmppConnectionConfiguration(String localAddress, String host, int port, long connectTimeout) {
+        this.localAddress = localAddress;
         this.host = host;
         this.port = port;
         this.connectTimeout = connectTimeout;
+    }
+
+    /**
+     * Local Address is the IP Address of the network interface on which the connection is made. If the specified
+     * local address is {@code null}, the local address of a new channel is determined automatically.
+     * @param value
+     */
+    public void setLocalAddress(String value) {
+        this.localAddress = value;
+    }
+
+    public String getLocalAddress() {
+        return this.localAddress;
     }
 
     public void setHost(String value) {

@@ -96,7 +96,7 @@ public class DefaultSmppClient implements SmppClient {
      * expiration of requests will be disabled with no monitorExecutors.
      * The maximum number of IO worker threads across any client sessions
      * created with this SmppClient will be Runtime.getRuntime().availableProcessors().
-     * @param executor The executor that IO workers will be executed with. An
+     * @param executors The executor that IO workers will be executed with. An
      *      Executors.newCachedDaemonThreadPool() is recommended. The max threads
      *      will never grow more than expectedSessions if NIO sockets are used.
      */
@@ -107,7 +107,7 @@ public class DefaultSmppClient implements SmppClient {
     /**
      * Creates a new default SmppClient. Window monitoring and automatic
      * expiration of requests will be disabled with no monitorExecutors.
-     * @param executor The executor that IO workers will be executed with. An
+     * @param executors The executor that IO workers will be executed with. An
      *      Executors.newCachedDaemonThreadPool() is recommended. The max threads
      *      will never grow more than expectedSessions if NIO sockets are used.
      * @param expectedSessions The max number of concurrent sessions expected
@@ -122,7 +122,7 @@ public class DefaultSmppClient implements SmppClient {
     
     /**
      * Creates a new default SmppClient.
-     * @param executor The executor that IO workers will be executed with. An
+     * @param executors The executor that IO workers will be executed with. An
      *      Executors.newCachedDaemonThreadPool() is recommended. The max threads
      *      will never grow more than expectedSessions if NIO sockets are used.
      * @param expectedSessions The max number of concurrent sessions expected
@@ -221,7 +221,7 @@ public class DefaultSmppClient implements SmppClient {
 
     protected DefaultSmppSession doOpen(SmppSessionConfiguration config, SmppSessionHandler sessionHandler) throws SmppTimeoutException, SmppChannelException, InterruptedException {
         // create and connect a channel to the remote host
-        Channel channel = createConnectedChannel(config.getHost(), config.getPort(), config.getConnectTimeout());
+        Channel channel = createConnectedChannel(config.getLocalAddress(), config.getHost(), config.getPort(), config.getConnectTimeout());
         // tie this new opened channel with a new session
         return createSession(channel, config, sessionHandler);
     }
@@ -269,32 +269,39 @@ public class DefaultSmppClient implements SmppClient {
         return session;
     }
 
-    protected Channel createConnectedChannel(String host, int port, long connectTimeoutMillis) throws SmppTimeoutException, SmppChannelException, InterruptedException {
-        // a socket address used to "bind" to the remote system
+    protected Channel createConnectedChannel(String localAddress, String host, int port, long connectTimeoutMillis) throws SmppTimeoutException, SmppChannelException, InterruptedException {
+        // remote socket address to "bind"
         InetSocketAddress socketAddr = new InetSocketAddress(host, port);
 
-	// set the timeout
-	this.clientBootstrap.setOption("connectTimeoutMillis", connectTimeoutMillis);
+        // local socket address from where we "bind"
+        InetSocketAddress socketLocalAddr = null;
+
+        if(!(localAddress == null || localAddress.isEmpty())){
+            socketLocalAddr = new InetSocketAddress(localAddress, 0);
+        }
+
+	    // set the timeout
+	    this.clientBootstrap.setOption("connectTimeoutMillis", connectTimeoutMillis);
 
         // attempt to connect to the remote system
-        ChannelFuture connectFuture = this.clientBootstrap.connect(socketAddr);
-        
-        // wait until the connection is made successfully
-	// boolean timeout = !connectFuture.await(connectTimeoutMillis);
-	// BAD: using .await(timeout)
-	//      see http://netty.io/3.9/api/org/jboss/netty/channel/ChannelFuture.html
-	connectFuture.awaitUninterruptibly();
-	//assert connectFuture.isDone();
+        ChannelFuture connectFuture = this.clientBootstrap.connect(socketAddr, socketLocalAddr);
 
-	if (connectFuture.isCancelled()) {
-	    throw new InterruptedException("connectFuture cancelled by user");
-	} else if (!connectFuture.isSuccess()) {
-	    if (connectFuture.getCause() instanceof org.jboss.netty.channel.ConnectTimeoutException) {
-		throw new SmppChannelConnectTimeoutException("Unable to connect to host [" + host + "] and port [" + port + "] within " + connectTimeoutMillis + " ms", connectFuture.getCause());
-	    } else {
-		throw new SmppChannelConnectException("Unable to connect to host [" + host + "] and port [" + port + "]: " + connectFuture.getCause().getMessage(), connectFuture.getCause());
-	    }
-	}
+        // wait until the connection is made successfully
+	    // boolean timeout = !connectFuture.await(connectTimeoutMillis);
+	    // BAD: using .await(timeout)
+	    //      see http://netty.io/3.9/api/org/jboss/netty/channel/ChannelFuture.html
+	    connectFuture.awaitUninterruptibly();
+	    //assert connectFuture.isDone();
+
+        if (connectFuture.isCancelled()) {
+            throw new InterruptedException("connectFuture cancelled by user");
+        } else if (!connectFuture.isSuccess()) {
+            if (connectFuture.getCause() instanceof org.jboss.netty.channel.ConnectTimeoutException) {
+            throw new SmppChannelConnectTimeoutException("Unable to connect from local address [" + localAddress + "] to host [" + host + "] and port [" + port + "] within " + connectTimeoutMillis + " ms", connectFuture.getCause());
+            } else {
+            throw new SmppChannelConnectException("Unable to connect from local address [" + localAddress + "] to host [" + host + "] and port [" + port + "]: " + connectFuture.getCause().getMessage(), connectFuture.getCause());
+            }
+        }
 
         // if we get here, then we were able to connect and get a channel
         return connectFuture.getChannel();

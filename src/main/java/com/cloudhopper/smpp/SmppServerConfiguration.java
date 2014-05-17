@@ -30,6 +30,7 @@ import com.cloudhopper.smpp.ssl.SslConfiguration;
 public class SmppServerConfiguration {
 
     private String name;
+    private String bindAddress;
     private int port;
     // SSL
     private boolean useSsl = false;
@@ -44,7 +45,7 @@ public class SmppServerConfiguration {
     // smpp version the server supports
     private byte interfaceVersion;
     // max number of connections/sessions this server will expect to handle
-    // this number corrosponds to the number of worker threads handling reading
+    // this number corresponds to the number of worker threads handling reading
     // data from sockets and the thread things will be processed under
     private int maxConnectionSize;
     private boolean nonBlockingSocketsEnabled;
@@ -61,6 +62,7 @@ public class SmppServerConfiguration {
 
     public SmppServerConfiguration() {
         this.name = "SmppServer";
+        this.bindAddress = "0.0.0.0";
         this.port = 2775;
         this.bindTimeout = 5000;
         this.systemId = "cloudhopper";
@@ -142,6 +144,19 @@ public class SmppServerConfiguration {
 
     public String getName() {
         return this.name;
+    }
+
+    /**
+     * The address you specify in bind tells server where to listen. The default address is 0.0.0.0 which tells server
+     * to bind to every available network interface.
+     * @param value
+     */
+    public void setBindAddress(String value) {
+        this.bindAddress = value;
+    }
+
+    public String getBindAddress() {
+        return this.bindAddress;
     }
 
     public int getPort() {

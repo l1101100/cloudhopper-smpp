@@ -42,7 +42,9 @@ import com.cloudhopper.smpp.type.SmppChannelException;
 import com.cloudhopper.smpp.type.SmppProcessingException;
 import com.cloudhopper.smpp.util.DaemonExecutors;
 import java.lang.management.ManagementFactory;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.UnknownHostException;
 import java.util.Timer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -242,9 +244,11 @@ public class DefaultSmppServer implements SmppServer, DefaultSmppServerMXBean {
             throw new SmppChannelException("Unable to start: server is destroyed");
         }
         try {
-            serverChannel = this.serverBootstrap.bind(new InetSocketAddress(configuration.getPort()));
-            logger.info("{} started on SMPP port [{}]", configuration.getName(), configuration.getPort());
+            serverChannel = this.serverBootstrap.bind(new InetSocketAddress(InetAddress.getByName(configuration.getBindAddress()), configuration.getPort()));
+            logger.info("{} started on SMPP port [{}] and socket address [{}]", configuration.getName(), configuration.getPort(), configuration.getBindAddress());
         } catch (ChannelException e) {
+            throw new SmppChannelException(e.getMessage(), e);
+        } catch (UnknownHostException e) {
             throw new SmppChannelException(e.getMessage(), e);
         }
     }
