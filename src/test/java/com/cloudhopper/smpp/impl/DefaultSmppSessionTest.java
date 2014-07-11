@@ -149,7 +149,7 @@ public class DefaultSmppSessionTest {
         }
     }
 
-    @Test
+    //@Test
     public void bindToFirewalledHostThrowsSmppChannelConnectTimeoutException() throws Exception {
         SmppSessionConfiguration configuration = createDefaultConfiguration();
         // change to a host and port that are definitely firewalled
