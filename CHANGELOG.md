@@ -4,6 +4,27 @@ Cloudhopper by Twitter
 cloudhopper-smpp
 ----------------
 
+## 5.0.9 - 2015-11-24
+ - Add support for missing pdus and tags
+ - Allow unbound channel to respond to enquire_link PDU
+ - Corrected name of DataCoding SmppConstant to IA5 (not GSM)
+ - Updated value of DATA_CODING_GSM constant and made it deprecated
+ - Add ESM_CLASS Message Mode constants
+ - DefaultSmppServer should use IO executor passed to its constructor
+ - Fix-up comments on the SMPP error code constants
+
+## 5.0.8 - 2015-04-17
+ - Fixed issue where rawErrorCode not set on DeliveryReceipt (khaing211)
+ - Support for host address in SmppServerConfiguration (pgoergler)
+ - Improved demo for echo server (dwilkie)
+ - Tlv class supports equals and hashCode (skytreader)
+
+## 5.0.7 - 2015-02-02
+ - ch-commons-util version bumped from 6.0.1 to 6.0.2 to fix race condition bug 
+   in WindowFuture:
+     https://github.com/twitter/cloudhopper-smpp/issues/61
+ - Netty dependency bumped from 3.9.0.Final to 3.9.6.Final
+ 
 ## 5.0.6 - 2014-04-02
  - Support for low-level PDU listener (supports advanced logging, sniffing, and
    discarding before normal processing). New methods overridable in

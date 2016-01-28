@@ -1,13 +1,25 @@
-Cloudhopper SMPP by Twitter [![Build Status](https://secure.travis-ci.org/twitter/cloudhopper-smpp.png?branch=master)](http://travis-ci.org/twitter/cloudhopper-smpp)
-============================
+Cloudhopper SMPP by Fizzed (forked from Twitter) 
+================================================
 
-cloudhopper-smpp
+[![Build Status](https://secure.travis-ci.org/fizzed/cloudhopper-smpp.png?branch=master)](http://travis-ci.org/fizzed/cloudhopper-smpp)
+
+News
+------------------------
+
+**Nov 2015**
+
+While Twitter still relies exclusively on `ch-smpp` for its global SMS
+infrastructure, Twitter stopped supporting this opensource project as of
+October 2015.  Fizzed, Inc. was the only company maintaining it, so any new
+support & development will occur here in its new home.
+
+Overview
 ------------------------
 
 Efficient, scalable, rock-solid, and flexible Java implementation of the Short
 Messaging Peer to Peer Protocol (SMPP).
 
- * Real-world used library by Twitter across nearly every SMSC vendor and 
+ * Real-world used library by Twitter across nearly every SMSC vendor and
    mobile operator around the world.  We've seen almost every variance in the
    SMPP protocol and this library handles it flawlessly.
  * Rigorous unit testing
@@ -18,7 +30,7 @@ Messaging Peer to Peer Protocol (SMPP).
  * Uses non-blocking (NIO) sockets (via underlying Netty dependency, one thread
    can support 1 or more SMPP sessions)
  * Can support thousands of binds/connections using minimal resources and threads
- * Supports both client and server modes of the SMPP protocol (yes you can 
+ * Supports both client and server modes of the SMPP protocol (yes you can
    write your own SMPP server using this library as well as be a client to one)
  * Supports synchronous request mode (send request and block until response
    received)
@@ -43,25 +55,22 @@ Background and Contributors
 
 This library was originally developed by Cloudhopper, Inc. in 2008. Cloudhopper
 was acquired by Twitter in April 2010. The main author of this library,
-Joe Lauer, left Twitter in April 2013. While folks at Twitter still contribute
-and maintain this library, Joe is now with [Mfizz, Inc](http://mfizz.com).
-Mfizz actively sponsors this project in conjunction with Twitter. If you have
-any commercial questions/ideas pertaining to this library, feel free to reach
-out to [Mfizz](http://mfizz.com).
+Joe Lauer, left Twitter in April 2013 to found Fizzed, Inc.  As of Nov 2015,
+[Fizzed, Inc](http://fizzed.com) is the official maintainer of the library.
+If you're looking for commercial support, please contact [Fizzed](http://fizzed.com).
 
 - Joe Lauer (Twitter: [@jjlauer](http://twitter.com/jjlauer))
-- Garth Patil (Twitter: [@trg](http://twitter.com/trg))
+- Garth (Twitter: [@trg](http://twitter.com/trg))
 
 Installation
 ------------
 
-Library versions >= 5.0.0 are now published to the Maven Central Repository.
-Just add the following dependency to your project maven pom.xml:
+Library is available via maven central
 
     <dependency>
-      <groupId>com.cloudhopper</groupId>
+      <groupId>com.fizzed</groupId>
       <artifactId>ch-smpp</artifactId>
-      <version>[5.0.0,)</version>
+      <version>5.0.9</version>
     </dependency>
 
 Demo Code / Tutorials
@@ -69,7 +78,7 @@ Demo Code / Tutorials
 
 There are numerous examples of how to use various parts of this library:
 
-    src/test/java/com/cloudhopper/commons/util/demo
+    src/test/java/com/cloudhopper/smpp/demo/
 
 To run some of the samples, there is a Makefile to simplify the syntax required
 by Maven:
@@ -83,6 +92,8 @@ by Maven:
     make dlr
     make ssl-client
     make ssl-server
+    make persist-client
+    make server-echo
 
 On Windows, the examples can run with `nmake` instead of `make`.
 
@@ -97,6 +108,10 @@ In the second shell, run:
 
 You'll see the client bind to the server and a few different type of requests
 exchanged back and forth.
+
+You can also try `make persist-client` instead of `make client` which demonstrates a persistent SMPP connection.
+
+`make server-echo` will echo back any MT as an MO. This makes it easier to test handling of MO messages.
 
 User Contributed Demos
 ----------------------
@@ -115,6 +130,8 @@ Please let us know if you have other tutorials worth mentioning!
 License
 -------
 
-Copyright (C) 2009-2014 Twitter, Inc.
+Copyright (C) 2015+ Fizzed, Inc.
+Copyright (C) 2009-2015 Twitter, Inc.
+Copyright (C) 2008-2009 Cloudhopper, Inc.
 
 This work is licensed under the Apache License, Version 2.0. See LICENSE for details.

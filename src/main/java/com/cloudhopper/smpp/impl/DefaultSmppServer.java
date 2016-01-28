@@ -4,7 +4,7 @@ package com.cloudhopper.smpp.impl;
  * #%L
  * ch-smpp
  * %%
- * Copyright (C) 2009 - 2012 Cloudhopper by Twitter
+ * Copyright (C) 2009 - 2015 Cloudhopper by Twitter
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -115,7 +115,7 @@ public class DefaultSmppServer implements SmppServer, DefaultSmppServerMXBean {
      *      sockets are used.
      */
     public DefaultSmppServer(final SmppServerConfiguration configuration, SmppServerHandler serverHandler, ExecutorService executor) {
-        this(configuration, serverHandler, DaemonExecutors.newCachedDaemonThreadPool(), null);
+        this(configuration, serverHandler, executor, null);
     }
 
     /**
@@ -244,8 +244,13 @@ public class DefaultSmppServer implements SmppServer, DefaultSmppServerMXBean {
             throw new SmppChannelException("Unable to start: server is destroyed");
         }
         try {
+<<<<<<< HEAD
             serverChannel = this.serverBootstrap.bind(new InetSocketAddress(InetAddress.getByName(configuration.getBindAddress()), configuration.getPort()));
             logger.info("{} started on SMPP port [{}] and socket address [{}]", configuration.getName(), configuration.getPort(), configuration.getBindAddress());
+=======
+            serverChannel = this.serverBootstrap.bind(new InetSocketAddress(configuration.getHost(), configuration.getPort()));
+            logger.info("{} started at {}:{}", configuration.getName(), configuration.getHost(), configuration.getPort());
+>>>>>>> 756f0e3608188dcc0d37110ff802eaf5407cab8d
         } catch (ChannelException e) {
             throw new SmppChannelException(e.getMessage(), e);
         } catch (UnknownHostException e) {
@@ -265,7 +270,7 @@ public class DefaultSmppServer implements SmppServer, DefaultSmppServerMXBean {
             this.serverChannel.close().awaitUninterruptibly();
             this.serverChannel = null;
         }
-        logger.info("{} stopped on SMPP port [{}]", configuration.getName(), configuration.getPort());
+        logger.info("{} stopped at {}:{}", configuration.getName(), configuration.getHost(), configuration.getPort());
     }
     
     @Override

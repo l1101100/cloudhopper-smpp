@@ -4,7 +4,7 @@ package com.cloudhopper.smpp;
  * #%L
  * ch-smpp
  * %%
- * Copyright (C) 2009 - 2012 Cloudhopper by Twitter
+ * Copyright (C) 2009 - 2015 Cloudhopper by Twitter
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,17 +21,21 @@ package com.cloudhopper.smpp;
  */
 
 import com.cloudhopper.smpp.ssl.SslConfiguration;
+import com.cloudhopper.smpp.type.SmppConnectionConfiguration;
 
 /**
  * Configuration of an SMPP server.
  * 
  * @author joelauer (twitter: @jjlauer or <a href="http://twitter.com/jjlauer" target=window>http://twitter.com/jjlauer</a>)
  */
-public class SmppServerConfiguration {
+public class SmppServerConfiguration extends SmppConnectionConfiguration {
 
     private String name;
+<<<<<<< HEAD
     private String bindAddress;
     private int port;
+=======
+>>>>>>> 756f0e3608188dcc0d37110ff802eaf5407cab8d
     // SSL
     private boolean useSsl = false;
     private SslConfiguration sslConfiguration;
@@ -61,9 +65,13 @@ public class SmppServerConfiguration {
     private boolean defaultSessionCountersEnabled = false;
 
     public SmppServerConfiguration() {
+        super("0.0.0.0", 2775, 5000l);
         this.name = "SmppServer";
+<<<<<<< HEAD
         this.bindAddress = "0.0.0.0";
         this.port = 2775;
+=======
+>>>>>>> 756f0e3608188dcc0d37110ff802eaf5407cab8d
         this.bindTimeout = 5000;
         this.systemId = "cloudhopper";
         this.autoNegotiateInterfaceVersion = true;
@@ -146,6 +154,7 @@ public class SmppServerConfiguration {
         return this.name;
     }
 
+<<<<<<< HEAD
     /**
      * The address you specify in bind tells server where to listen. The default address is 0.0.0.0 which tells server
      * to bind to every available network interface.
@@ -167,6 +176,8 @@ public class SmppServerConfiguration {
         this.port = port;
     }
 
+=======
+>>>>>>> 756f0e3608188dcc0d37110ff802eaf5407cab8d
     public void setUseSsl(boolean value) {
 	this.useSsl = value;
     }

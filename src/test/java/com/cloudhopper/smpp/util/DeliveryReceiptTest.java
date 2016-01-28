@@ -4,7 +4,7 @@ package com.cloudhopper.smpp.util;
  * #%L
  * ch-smpp
  * %%
- * Copyright (C) 2009 - 2012 Cloudhopper by Twitter
+ * Copyright (C) 2009 - 2015 Cloudhopper by Twitter
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -291,6 +291,17 @@ public class DeliveryReceiptTest {
 
         //logger.debug(receipt0);
         Assert.assertEquals("id:12345678901 sub:000 dlvrd:000 submit date:0000000000 done date:0000000000 stat:BADSTAT err:000 text:", receipt0);
+    }
+
+
+    @Test
+    public void toShortMessageWithFullConstructor() throws DeliveryReceiptException {
+        DeliveryReceipt dlr = new DeliveryReceipt("12345", 1, 1, new DateTime(0L, DateTimeZone.UTC),
+                new DateTime(0L, DateTimeZone.UTC), SmppConstants.STATE_ENROUTE, 0, "text");
+
+        String receipt = dlr.toShortMessage();
+
+        Assert.assertEquals("id:12345 sub:001 dlvrd:001 submit date:7001010000 done date:7001010000 stat:ENROUTE err:000 text:text", receipt);
     }
 
     @Test
