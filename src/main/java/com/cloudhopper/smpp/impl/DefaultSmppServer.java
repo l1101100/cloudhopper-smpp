@@ -42,9 +42,7 @@ import com.cloudhopper.smpp.type.SmppChannelException;
 import com.cloudhopper.smpp.type.SmppProcessingException;
 import com.cloudhopper.smpp.util.DaemonExecutors;
 import java.lang.management.ManagementFactory;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.UnknownHostException;
 import java.util.Timer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -66,7 +64,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Default implementation of an SmppServer that supports SMPP version 3.3 and 3.4.
- * 
+ *
  * @author joelauer (twitter: @jjlauer or <a href="http://twitter.com/jjlauer" target=window>http://twitter.com/jjlauer</a>)
  */
 public class DefaultSmppServer implements SmppServer, DefaultSmppServerMXBean {
@@ -80,17 +78,17 @@ public class DefaultSmppServer implements SmppServer, DefaultSmppServerMXBean {
     private ExecutorService bossThreadPool;
     private ChannelFactory channelFactory;
     private ServerBootstrap serverBootstrap;
-    private Channel serverChannel; 
+    private Channel serverChannel;
     // shared instance of a timer for session writeTimeout timing
     private final org.jboss.netty.util.Timer writeTimeoutTimer;
     // shared instance of a timer background thread to close unbound channels
     private final Timer bindTimer;
-   // shared instance of a session id generator (an atomic long)
+    // shared instance of a session id generator (an atomic long)
     private final AtomicLong sessionIdSequence;
     // shared instance for monitor executors
     private final ScheduledExecutorService monitorExecutor;
     private DefaultSmppServerCounters counters;
-    
+
     /**
      * Creates a new default SmppServer. Window monitoring and automatic
      * expiration of requests will be disabled with no monitorExecutors.
@@ -102,7 +100,7 @@ public class DefaultSmppServer implements SmppServer, DefaultSmppServerMXBean {
     public DefaultSmppServer(SmppServerConfiguration configuration, SmppServerHandler serverHandler) {
         this(configuration, serverHandler, DaemonExecutors.newCachedDaemonThreadPool());
     }
-    
+
     /**
      * Creates a new default SmppServer. Window monitoring and automatic
      * expiration of requests will be disabled with no monitorExecutors.
@@ -138,37 +136,37 @@ public class DefaultSmppServer implements SmppServer, DefaultSmppServerMXBean {
         this.serverHandler = serverHandler;
         // we'll put the "boss" worker for a server in its own pool
         this.bossThreadPool = Executors.newCachedThreadPool();
-        
+
         // a factory for creating channels (connections)
         if (configuration.isNonBlockingSocketsEnabled()) {
             this.channelFactory = new NioServerSocketChannelFactory(this.bossThreadPool, executor, configuration.getMaxConnectionSize());
         } else {
             this.channelFactory = new OioServerSocketChannelFactory(this.bossThreadPool, executor);
         }
-        
+
         // tie the server bootstrap to this server socket channel factory
         this.serverBootstrap = new ServerBootstrap(this.channelFactory);
-        
+
         // set options for the server socket that are useful
         this.serverBootstrap.setOption("reuseAddress", configuration.isReuseAddress());
-        
+
         // we use the same default pipeline for all new channels - no need for a factory
         this.serverConnector = new SmppServerConnector(channels, this);
         this.serverBootstrap.getPipeline().addLast(SmppChannelConstants.PIPELINE_SERVER_CONNECTOR_NAME, this.serverConnector);
-	// a shared instance of a timer for session writeTimeout timing
-	this.writeTimeoutTimer = new org.jboss.netty.util.HashedWheelTimer();
+        // a shared instance of a timer for session writeTimeout timing
+        this.writeTimeoutTimer = new org.jboss.netty.util.HashedWheelTimer();
         // a shared timer used to make sure new channels are bound within X milliseconds
         this.bindTimer = new Timer(configuration.getName() + "-BindTimer0", true);
         // NOTE: this would permit us to customize the "transcoding" context for a server if needed
         this.transcoder = new DefaultPduTranscoder(new DefaultPduTranscoderContext());
-        this.sessionIdSequence = new AtomicLong(0);        
+        this.sessionIdSequence = new AtomicLong(0);
         this.monitorExecutor = monitorExecutor;
         this.counters = new DefaultSmppServerCounters();
         if (configuration.isJmxEnabled()) {
             registerMBean();
         }
     }
-    
+
     private void registerMBean() {
         if (configuration == null) {
             return;
@@ -184,7 +182,7 @@ public class DefaultSmppServer implements SmppServer, DefaultSmppServerMXBean {
             }
         }
     }
-    
+
     private void unregisterMBean() {
         if (configuration == null) {
             return;
@@ -213,7 +211,7 @@ public class DefaultSmppServer implements SmppServer, DefaultSmppServerMXBean {
     public SmppServerConfiguration getConfiguration() {
         return this.configuration;
     }
-    
+
     @Override
     public DefaultSmppServerCounters getCounters() {
         return this.counters;
@@ -222,7 +220,7 @@ public class DefaultSmppServer implements SmppServer, DefaultSmppServerMXBean {
     public Timer getBindTimer() {
         return this.bindTimer;
     }
-    
+
     @Override
     public boolean isStarted() {
         return (this.serverChannel != null && this.serverChannel.isBound());
@@ -237,23 +235,16 @@ public class DefaultSmppServer implements SmppServer, DefaultSmppServerMXBean {
     public boolean isDestroyed() {
         return (this.serverBootstrap == null);
     }
-    
+
     @Override
     public void start() throws SmppChannelException {
         if (isDestroyed()) {
             throw new SmppChannelException("Unable to start: server is destroyed");
         }
         try {
-<<<<<<< HEAD
-            serverChannel = this.serverBootstrap.bind(new InetSocketAddress(InetAddress.getByName(configuration.getBindAddress()), configuration.getPort()));
-            logger.info("{} started on SMPP port [{}] and socket address [{}]", configuration.getName(), configuration.getPort(), configuration.getBindAddress());
-=======
             serverChannel = this.serverBootstrap.bind(new InetSocketAddress(configuration.getHost(), configuration.getPort()));
             logger.info("{} started at {}:{}", configuration.getName(), configuration.getHost(), configuration.getPort());
->>>>>>> 756f0e3608188dcc0d37110ff802eaf5407cab8d
         } catch (ChannelException e) {
-            throw new SmppChannelException(e.getMessage(), e);
-        } catch (UnknownHostException e) {
             throw new SmppChannelException(e.getMessage(), e);
         }
     }
@@ -272,14 +263,14 @@ public class DefaultSmppServer implements SmppServer, DefaultSmppServerMXBean {
         }
         logger.info("{} stopped at {}:{}", configuration.getName(), configuration.getHost(), configuration.getPort());
     }
-    
+
     @Override
     public void destroy() {
         this.bindTimer.cancel();
         stop();
         this.serverBootstrap.releaseExternalResources();
         this.serverBootstrap = null;
-	this.writeTimeoutTimer.stop();
+        this.writeTimeoutTimer.stop();
         unregisterMBean();
         logger.info("{} destroyed on SMPP port [{}]", configuration.getName(), configuration.getPort());
     }
@@ -314,7 +305,7 @@ public class DefaultSmppServer implements SmppServer, DefaultSmppServerMXBean {
         }
 
         return bindResponse;
-    }    
+    }
 
     protected void bindRequested(Long sessionId, SmppSessionConfiguration config, BaseBind bindRequest) throws SmppProcessingException {
         counters.incrementBindRequestedAndGet();
@@ -349,28 +340,28 @@ public class DefaultSmppServer implements SmppServer, DefaultSmppServerMXBean {
         SmppSessionLogger loggingHandler = new SmppSessionLogger(DefaultSmppSession.class.getCanonicalName(), config.getLoggingOptions());
         channel.getPipeline().addAfter(SmppChannelConstants.PIPELINE_SESSION_THREAD_RENAMER_NAME, SmppChannelConstants.PIPELINE_SESSION_LOGGER_NAME, loggingHandler);
 
-	// add a writeTimeout handler after the logger
-	if (config.getWriteTimeout() > 0) {
-	    WriteTimeoutHandler writeTimeoutHandler = new WriteTimeoutHandler(writeTimeoutTimer, config.getWriteTimeout(), TimeUnit.MILLISECONDS);
-	    channel.getPipeline().addAfter(SmppChannelConstants.PIPELINE_SESSION_LOGGER_NAME, SmppChannelConstants.PIPELINE_SESSION_WRITE_TIMEOUT_NAME, writeTimeoutHandler);
-	}
+        // add a writeTimeout handler after the logger
+        if (config.getWriteTimeout() > 0) {
+            WriteTimeoutHandler writeTimeoutHandler = new WriteTimeoutHandler(writeTimeoutTimer, config.getWriteTimeout(), TimeUnit.MILLISECONDS);
+            channel.getPipeline().addAfter(SmppChannelConstants.PIPELINE_SESSION_LOGGER_NAME, SmppChannelConstants.PIPELINE_SESSION_WRITE_TIMEOUT_NAME, writeTimeoutHandler);
+        }
 
         // decoder in pipeline is ok (keep it)
 
         // create a new wrapper around a session to pass the pdu up the chain
         channel.getPipeline().remove(SmppChannelConstants.PIPELINE_SESSION_WRAPPER_NAME);
         channel.getPipeline().addLast(SmppChannelConstants.PIPELINE_SESSION_WRAPPER_NAME, new SmppSessionWrapper(session));
-        
+
         // check if the # of channels exceeds maxConnections
         if (this.channels.size() > this.configuration.getMaxConnectionSize()) {
             logger.warn("The current connection size [{}] exceeds the configured max connection size [{}]", this.channels.size(), this.configuration.getMaxConnectionSize());
         }
-        
+
         // session created, now pass it upstream
         counters.incrementSessionCreatedAndGet();
         incrementSessionSizeCounters(session);
         this.serverHandler.sessionCreated(sessionId, session, preparedBindResponse);
-        
+
         // register this session as an mbean
         if (configuration.isJmxEnabled()) {
             session.registerMBean(configuration.getJmxDomain() + ":type=" + configuration.getName() + "Sessions,name=" + sessionId);
@@ -383,13 +374,13 @@ public class DefaultSmppServer implements SmppServer, DefaultSmppServerMXBean {
         counters.incrementSessionDestroyedAndGet();
         decrementSessionSizeCounters(session);
         serverHandler.sessionDestroyed(sessionId, session);
-        
+
         // unregister this session as an mbean
         if (configuration.isJmxEnabled()) {
             session.unregisterMBean(configuration.getJmxDomain() + ":type=" + configuration.getName() + "Sessions,name=" + sessionId);
         }
     }
-    
+
     private void incrementSessionSizeCounters(DefaultSmppSession session) {
         this.counters.incrementSessionSizeAndGet();
         switch (session.getBindType()) {
@@ -404,7 +395,7 @@ public class DefaultSmppServer implements SmppServer, DefaultSmppServerMXBean {
                 break;
         }
     }
-    
+
     private void decrementSessionSizeCounters(DefaultSmppSession session) {
         this.counters.decrementSessionSizeAndGet();
         switch (session.getBindType()) {
@@ -421,32 +412,32 @@ public class DefaultSmppServer implements SmppServer, DefaultSmppServerMXBean {
     }
 
     // mainly for exposing via JMX
-    
+
     @Override
     public void resetCounters() {
         this.counters.reset();
     }
-    
+
     @Override
     public int getSessionSize() {
         return this.counters.getSessionSize();
     }
-    
+
     @Override
     public int getTransceiverSessionSize() {
         return this.counters.getTransceiverSessionSize();
     }
-    
+
     @Override
     public int getTransmitterSessionSize() {
         return this.counters.getTransmitterSessionSize();
     }
-    
+
     @Override
     public int getReceiverSessionSize() {
         return this.counters.getReceiverSessionSize();
     }
-    
+
     @Override
     public int getMaxConnectionSize() {
         return this.configuration.getMaxConnectionSize();
@@ -466,7 +457,7 @@ public class DefaultSmppServer implements SmppServer, DefaultSmppServerMXBean {
     public boolean isNonBlockingSocketsEnabled() {
         return this.configuration.isNonBlockingSocketsEnabled();
     }
-    
+
     @Override
     public boolean isReuseAddress() {
         return this.configuration.isReuseAddress();

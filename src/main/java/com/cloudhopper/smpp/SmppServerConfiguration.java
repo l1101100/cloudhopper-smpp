@@ -25,22 +25,17 @@ import com.cloudhopper.smpp.type.SmppConnectionConfiguration;
 
 /**
  * Configuration of an SMPP server.
- * 
+ *
  * @author joelauer (twitter: @jjlauer or <a href="http://twitter.com/jjlauer" target=window>http://twitter.com/jjlauer</a>)
  */
 public class SmppServerConfiguration extends SmppConnectionConfiguration {
 
     private String name;
-<<<<<<< HEAD
-    private String bindAddress;
-    private int port;
-=======
->>>>>>> 756f0e3608188dcc0d37110ff802eaf5407cab8d
     // SSL
     private boolean useSsl = false;
     private SslConfiguration sslConfiguration;
     // length of time to wait for a bind request
-    private long bindTimeout;       
+    private long bindTimeout;
     private String systemId;
     // if true, <= 3.3 for interface version normalizes to version 3.3
     // if true, >= 3.4 for interface version normalizes to version 3.4 and
@@ -49,7 +44,7 @@ public class SmppServerConfiguration extends SmppConnectionConfiguration {
     // smpp version the server supports
     private byte interfaceVersion;
     // max number of connections/sessions this server will expect to handle
-    // this number corresponds to the number of worker threads handling reading
+    // this number corrosponds to the number of worker threads handling reading
     // data from sockets and the thread things will be processed under
     private int maxConnectionSize;
     private boolean nonBlockingSocketsEnabled;
@@ -67,11 +62,6 @@ public class SmppServerConfiguration extends SmppConnectionConfiguration {
     public SmppServerConfiguration() {
         super("0.0.0.0", 2775, 5000l);
         this.name = "SmppServer";
-<<<<<<< HEAD
-        this.bindAddress = "0.0.0.0";
-        this.port = 2775;
-=======
->>>>>>> 756f0e3608188dcc0d37110ff802eaf5407cab8d
         this.bindTimeout = 5000;
         this.systemId = "cloudhopper";
         this.autoNegotiateInterfaceVersion = true;
@@ -102,7 +92,7 @@ public class SmppServerConfiguration extends SmppConnectionConfiguration {
     public void setJmxEnabled(boolean jmxEnabled) {
         this.jmxEnabled = jmxEnabled;
     }
-    
+
     public boolean isReuseAddress() {
         return reuseAddress;
     }
@@ -119,7 +109,7 @@ public class SmppServerConfiguration extends SmppConnectionConfiguration {
      * Sets if non-blocking (NIO) is used for this server.  If true, then the
      * NIO server socket is used for Netty, otherwise the normal blocking
      * server socket will be used.
-     * @param nonBlockingSocketsEnabled True if enabled, otherwise false 
+     * @param nonBlockingSocketsEnabled True if enabled, otherwise false
      */
     public void setNonBlockingSocketsEnabled(boolean nonBlockingSocketsEnabled) {
         this.nonBlockingSocketsEnabled = nonBlockingSocketsEnabled;
@@ -154,45 +144,21 @@ public class SmppServerConfiguration extends SmppConnectionConfiguration {
         return this.name;
     }
 
-<<<<<<< HEAD
-    /**
-     * The address you specify in bind tells server where to listen. The default address is 0.0.0.0 which tells server
-     * to bind to every available network interface.
-     * @param value
-     */
-    public void setBindAddress(String value) {
-        this.bindAddress = value;
-    }
-
-    public String getBindAddress() {
-        return this.bindAddress;
-    }
-
-    public int getPort() {
-        return port;
-    }
-
-    public void setPort(int port) {
-        this.port = port;
-    }
-
-=======
->>>>>>> 756f0e3608188dcc0d37110ff802eaf5407cab8d
     public void setUseSsl(boolean value) {
-	this.useSsl = value;
+        this.useSsl = value;
     }
 
-    public boolean isUseSsl() { 
-	return this.useSsl;
+    public boolean isUseSsl() {
+        return this.useSsl;
     }
 
     public void setSslConfiguration(SslConfiguration value) {
-	this.sslConfiguration = value;
-	setUseSsl(true);
+        this.sslConfiguration = value;
+        setUseSsl(true);
     }
 
     public SslConfiguration getSslConfiguration() {
-	return this.sslConfiguration;
+        return this.sslConfiguration;
     }
 
     /**
