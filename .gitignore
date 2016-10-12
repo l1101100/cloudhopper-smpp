@@ -6,3 +6,5 @@ target/
 
 .idea/
 ch-smpp.iml
+classes/artifacts/*
+src/main/java/META-INF/MANIFEST.MF
