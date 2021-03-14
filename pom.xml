@@ -1,35 +1,35 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.fizzed</groupId>
+    <groupId>com.bilimsa</groupId>
     <artifactId>ch-smpp</artifactId>
     <packaging>jar</packaging>
-    <version>5.0.10-SNAPSHOT</version>
+    <version>5.0.10</version>
     <name>ch-smpp</name>
     <description>Efficient, scalable, and flexible Java implementation of the Short Messaging Peer to Peer Protocol (SMPP)</description>
     <url>https://github.com/twitter/cloudhopper-smpp</url>
     <inceptionYear>2009</inceptionYear>
     
     <scm>
-        <url>https://github.com/fizzed/cloudhopper-smpp</url>
-        <connection>scm:git:https://github.com/fizzed/cloudhopper-smpp.git</connection>
-        <developerConnection>scm:git:git@github.com:fizzed/cloudhopper-smpp.git</developerConnection>
+        <url>https://github.com/l1101100/cloudhopper-smpp</url>
+        <connection>scm:git:https://github.com/l1101100/cloudhopper-smpp.git</connection>
+        <developerConnection>scm:git:git@github.com:l1101100/cloudhopper-smpp.git</developerConnection>
         <tag>master</tag>
     </scm>
   
-    <parent>
+    <!--<parent>
         <groupId>com.fizzed</groupId>
         <artifactId>fizzed-maven-parent</artifactId>
         <version>1.15</version>
-    </parent>
+    </parent>-->
     
     <properties>
         <main.java.package>com.cloudhopper.smpp</main.java.package>
         <ch-commons-util.version>6.0.2</ch-commons-util.version>
         <ch-commons-charset.version>3.0.2</ch-commons-charset.version>
         <ch-commons-gsm.version>3.0.0</ch-commons-gsm.version>
-        <netty.version>3.9.6.Final</netty.version>
-        <slf4j.version>1.7.13</slf4j.version>
+        <netty.version>3.9.9.Final</netty.version>
+        <slf4j.version>1.7.30</slf4j.version>
         <!-- workaround travis ci maven version requirement -->
         <maven.enforce.version>3.2.5</maven.enforce.version>
     </properties>
@@ -37,14 +37,14 @@
     <dependencies>
         <!-- compile scope -->
         <dependency>
-            <groupId>com.cloudhopper</groupId>
+            <groupId>com.bilimsa</groupId>
             <artifactId>ch-commons-util</artifactId>
-            <version>${ch-commons-util.version}</version>
+            <version>6.0.4</version>
         </dependency>
         <dependency>
-            <groupId>com.cloudhopper</groupId>
+            <groupId>com.bilimsa</groupId>
             <artifactId>ch-commons-charset</artifactId>
-            <version>${ch-commons-charset.version}</version>
+            <version>6.1.12</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -55,6 +55,7 @@
             <groupId>io.netty</groupId>
             <artifactId>netty</artifactId>
             <version>${netty.version}</version>
+
         </dependency>
         <!-- provided scope -->
         <!-- runtime scope -->
